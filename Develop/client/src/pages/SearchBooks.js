@@ -9,7 +9,7 @@ import {
 } from 'react-bootstrap';
 import { useMutation } from "@apollo/client";
 import Auth from '../utils/auth';
-import { saveBook, searchGoogleBooks } from '../utils/API';
+import { searchGoogleBooks } from '../utils/API';
 import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
 import { SAVE_BOOK } from '../utils/mutations';
 
@@ -76,7 +76,12 @@ const SearchBooks = () => {
 
     try {
       const { data } = await saveBook({
-        variables: { input: bookToSave}
+        variables: { input: bookToSave},
+        context: {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
       });
 
       // if book successfully saves to user's account, save book id to state

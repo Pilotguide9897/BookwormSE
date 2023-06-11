@@ -17,38 +17,30 @@ const SavedBooks = () => {
       console.error(error);
     }
   }
-  // To determine if  hook needs to run again
-  const userDataExists = Object.keys(userData).length;
+
+const [removeBook, { data, loading, error }] = useMutation(REMOVE_BOOK)
 
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
   const handleDeleteBook = async (bookId) => {
     const token = Auth.loggedIn() ? Auth.getToken() : null;
 
     if (!token) {
-      return false;
+      throw new Error('You are not authenticated to remove a book!');
     }
 
-   const [removeBook, { data, loading, error }] = useMutation(REMOVE_BOOK)
-    
-
     try {
-      const response = await deleteBook(bookId, token);
+      const { data: updatedUser } = await removeBook({ variables: { bookId }, context: { headers: { Authorization: `Bearer ${token}` } } });
 
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
-
-      const updatedUser = await response.json();
-      setUserData(updatedUser);
-      // upon success, remove book's id from localStorage
       removeBookId(bookId);
+      return updatedUser;
     } catch (err) {
       console.error(err);
+        throw new Error(`An error occurred removing the book! Error message: ${err.message}`);
     }
   };
 
   // if data isn't here yet, say so
-  if (!userDataLength) {
+  if (loading) {
     return <h2>LOADING...</h2>;
   }
 
