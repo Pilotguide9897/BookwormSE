@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
+import { useMutation } from '@apollo/client'
 import { Form, Button, Alert } from 'react-bootstrap';
-
 import { ADD_USER } from '../utils/mutations';
 import Auth from '../utils/auth';
 
@@ -11,6 +11,8 @@ const SignupForm = () => {
   const [validated] = useState(false);
   // set state for alert
   const [showAlert, setShowAlert] = useState(false);
+
+  const [addUser, { error }] = useMutation(ADD_USER);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -27,11 +29,9 @@ const SignupForm = () => {
       event.stopPropagation();
     }
 
-    const [addUser, { error }] = useMutation(ADD_USER);
-
     try {
       //const response = await createUser(userFormData);
-      const { data, loading } = await addUser ({
+      const { data } = await addUser ({
         // TODO: Do I need to add variables here?
         variables: {
           username: userFormData.username,
@@ -40,17 +40,11 @@ const SignupForm = () => {
         }
       });
 
-      if (error) {
-        console.error(error);
-        throw new Error('something went wrong!');
-      }
-
-      if (data.errors) {
-        console.error(data.errors);
+      if (!data) {
         throw new Error("something went wrong with the GraphQl server!");
       }
 
-      const { token, user } = await response.json();
+      const { token, user } = data.addUser;
       console.log(user);
       Auth.login(token);
     } catch (err) {
