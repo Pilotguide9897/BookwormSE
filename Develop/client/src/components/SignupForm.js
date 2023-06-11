@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 
-import { createUser } from '../utils/API';
+import { ADD_USER } from '../utils/mutations';
 import Auth from '../utils/auth';
 
 const SignupForm = () => {
@@ -27,11 +27,27 @@ const SignupForm = () => {
       event.stopPropagation();
     }
 
-    try {
-      const response = await createUser(userFormData);
+    const [addUser, { error }] = useMutation(ADD_USER);
 
-      if (!response.ok) {
+    try {
+      //const response = await createUser(userFormData);
+      const { data, loading } = await addUser ({
+        // TODO: Do I need to add variables here?
+        variables: {
+          username: userFormData.username,
+          email: userFormData.email,
+          password: userFormData.password
+        }
+      });
+
+      if (error) {
+        console.error(error);
         throw new Error('something went wrong!');
+      }
+
+      if (data.errors) {
+        console.error(data.errors);
+        throw new Error("something went wrong with the GraphQl server!");
       }
 
       const { token, user } = await response.json();

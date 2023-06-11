@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 
-import { loginUser } from '../utils/API';
+import { LOGIN_USER } from '../utils/mutations';
 import Auth from '../utils/auth';
 
 const LoginForm = () => {
@@ -25,11 +25,19 @@ const LoginForm = () => {
       event.stopPropagation();
     }
 
-    try {
-      const response = await loginUser(userFormData);
+    const [loginUser, { error }] = useMutation(LOGIN_USER);
 
-      if (!response.ok) {
-        throw new Error('something went wrong!');
+    try {
+      const { data, loading } = loginUser({
+        email: userFormData.email,
+        password: userFormData.password
+      });
+
+      //const response = await loginUser(userFormData);
+
+      if (error) {
+        console.error(error);
+        throw new Error('something went wrong logging in!');
       }
 
       const { token, user } = await response.json();
