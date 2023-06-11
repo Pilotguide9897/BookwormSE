@@ -9,7 +9,7 @@ import { REMOVE_BOOK } from '../utils/mutations';
 
 const SavedBooks = () => {
 
-  const { loading, data, error } = useQuery(GET_ME);
+  const { data, loading, error } = useQuery(GET_ME);
 
   if (data) {
     let userData = data;
@@ -28,7 +28,7 @@ const SavedBooks = () => {
       return false;
     }
 
-   const [removeBook, { error }] = useMutation(REMOVE_BOOK)
+   const [removeBook, { data, loading, error }] = useMutation(REMOVE_BOOK)
     
 
     try {
