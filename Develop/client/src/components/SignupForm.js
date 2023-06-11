@@ -30,13 +30,11 @@ const SignupForm = () => {
     }
 
     try {
-      //const response = await createUser(userFormData);
       const { data } = await addUser ({
-        // TODO: Do I need to add variables here?
         variables: {
           username: userFormData.username,
           email: userFormData.email,
-          password: userFormData.password
+          password: userFormData.password,
         }
       });
 
