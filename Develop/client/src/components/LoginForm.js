@@ -29,7 +29,6 @@ const LoginForm = () => {
 
     try {
       const { data, loading } = loginUser({
-        // TODO: Do I need to add variables here?
         email: userFormData.email,
         password: userFormData.password
       });

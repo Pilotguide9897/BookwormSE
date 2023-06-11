@@ -1,71 +1,103 @@
-const { User } = require ('../models/');
-const { findOne } = require('../models/User');
-const { signToken } = require('../utils/auth');
+const { User } = require("../models/");
+const { signToken } = require("../utils/auth");
 
 const resolvers = {
-    Query: {
-        me: async (parent, args, context) => {
-            if (context.user) { // Because we need to know if there is a user logged in
-                const foundUser = await findOne({
-                    $or: [{ _id: context.user.id }, { username: context.user.username }]
-                });
-                if (!foundUser) {
-                    // you cannot do res.status because GraphQL does not have direct access to the http response object. Instead if there is a problem, to handle it use `throw new Error().
-                    throw new Error ('Unable to find an associated user');
-                }
-                    return foundUser;
-                }
-            throw new Error('You must be logged in to access user-specific data');
-            },
-            
-        },
-    },
-    // $or is an operator in mongoDB to search for a user. It performs the or operation on an array.
-
-    Mutation: {
-        login: async (parent, { email, password }) => {
-
-        try {
-            const user = await User.findOne({ email });
-
-            // Must login, sign a token, send it back to the client.
-            // 1. check if there is a user with that associated email
-            if (!user) {
-                throw new Error ('Invalid login credentials');
-            }
-
-            //2. If the user has a valid email associated with an acocunt, get them to log in:
-            const isCorrectPassword= await bcrypt
-            
-            return { user, token };
-        } catch {
-            
+  Query: {
+    me: async (parent, args, context) => {
+      if (context.user) {
+        const foundUser = await User.findOne({
+          $or: [{ _id: context.user._id }, { username: context.user.username }],
+        });
+        if (!foundUser) {
+          throw new Error("Unable to find an associated user");
         }
-            
-
-
-
-
-
-        },
-        addUser: async (parent, { username, email, password }) => {
-            return await User.create({
-                username: username,
-                email: email,
-                password: password
-            });
-        },
-        saveBook: async (parent, { input }) => {
-            return await User.
-        },
-        removeBook: async (parent, { userId, bookId }) => {
-            return await User.findOneAndUpdate(
-                { _id: userId },
-                { $pull: { savedBooks: { bookId: bookId}}},
-                { new: true }
-            );
-        },
+        return foundUser;
+      }
+      throw new Error("You must be logged in to access user-specific data");
     },
+  },
+
+  Mutation: {
+    login: async (parent, { email, password }) => {
+      try {
+        const user = await User.findOne({ email: email });
+
+        if (!user) {
+          throw new Error(
+            "Unable to locate a user account associated with that email!"
+          );
+        }
+
+        const correctPw = await user.isCorrectPassword(password);
+
+        if (!correctPw) {
+          throw new Error("Invalid login credentials!");
+        }
+
+        const token = signToken(user);
+        return { token, user };
+      } catch (err) {
+        throw new Error("An error occurred during login.");
+      }
+    },
+
+    addUser: async (parent, args) => {
+      try {
+        const newUser = await User.create(args);
+
+        if (!newUser) {
+          throw new Error("There was a problem creating the new user!");
+        }
+        const token = signToken(newUser);
+        return { token, newUser };
+      } catch (err) {
+        throw new Error("An error occurred during new user creation!");
+      }
+    },
+
+    saveBook: async (parent, { newBookToSave }, context) => {
+      if (context.user) {
+        try {
+          const userWithSavedBook = await User.findOneAndUpdate(
+            { _id: context.user._id },
+            { $push: { savedBooks: newBookToSave } },
+            { new: true }
+          );
+          return userWithSavedBook;
+        } catch (err) {
+          throw new Error(
+            "There was a problem updating the list of saved books with the new title!"
+          );
+        }
+      }
+      throw new Error("You must be logged in to save books!");
+    },
+
+    removeBook: async (parent, { bookId }, context) => {
+      if (context.user) {
+        try {
+          const userWithRemovedBook = await User.findOneAndUpdate(
+            { _id: context.user._id },
+            { $pull: { savedBooks: { bookId: bookId } } },
+            { new: true }
+          );
+          if (!userWithRemovedBook) {
+            throw new Error(
+              "There was a problem removing the book from your list of saved titles!"
+            );
+          }
+          return userWithRemovedBook;
+        } catch (err) {
+          throw new Error(
+            "There was a problem removing the book from your list of saved titles!"
+          );
+        }
+      }
+      throw new Error(
+        "You must be logged in to remove books from your book list!"
+      );
+    },
+  },
 };
 
 module.exports = resolvers;
