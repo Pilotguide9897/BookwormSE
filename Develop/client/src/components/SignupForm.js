@@ -30,6 +30,10 @@ const SignupForm = () => {
     }
 
     try {
+      console.log(`userFormData: ${userFormData}`);
+      console.log(`userFormData.username: ${userFormData.username}`);
+      console.log(`userFormData.email: ${userFormData.email}`);
+      console.log(`userFormData.password: ${userFormData.password}`);
       const { data } = await addUser ({
         variables: {
           username: userFormData.username,
@@ -41,12 +45,11 @@ const SignupForm = () => {
       if (!data) {
         throw new Error("something went wrong with the GraphQl server!");
       }
-
       const { token, user } = data.addUser;
       console.log(user);
       Auth.login(token);
     } catch (err) {
-      console.error(err);
+      console.error('Error with signing-up:', err);
       setShowAlert(true);
     }
 

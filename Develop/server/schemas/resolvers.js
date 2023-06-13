@@ -16,7 +16,6 @@ const resolvers = {
       throw new Error("You must be logged in to access user-specific data");
     },
   },
-
   Mutation: {
     login: async (parent, { email, password }) => {
       try {
@@ -40,27 +39,28 @@ const resolvers = {
         throw new Error("An error occurred during login.");
       }
     },
-
     addUser: async (parent, args) => {
+      console.log(args);
       try {
         const newUser = await User.create(args);
+        console.log(`newUser:${newUser}`);
 
         if (!newUser) {
           throw new Error("There was a problem creating the new user!");
         }
         const token = signToken(newUser);
-        return { token, newUser };
+        return { token, user: newUser }; // This returned successfully.
       } catch (err) {
+        console.error(err);
         throw new Error("An error occurred during new user creation!");
       }
     },
-
-    saveBook: async (parent, { newBookToSave }, context) => {
+    saveBook: async (parent, { input }, context) => {
       if (context.user) {
         try {
           const userWithSavedBook = await User.findOneAndUpdate(
             { _id: context.user._id },
-            { $push: { savedBooks: newBookToSave } },
+            { $push: { savedBooks: input } },
             { new: true }
           );
           return userWithSavedBook;
@@ -72,7 +72,6 @@ const resolvers = {
       }
       throw new Error("You must be logged in to save books!");
     },
-
     removeBook: async (parent, { bookId }, context) => {
       if (context.user) {
         try {

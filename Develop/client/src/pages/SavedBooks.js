@@ -6,16 +6,14 @@ import { removeBookId } from '../utils/localStorage';
 import { GET_ME } from '../utils/queries';
 import { REMOVE_BOOK } from '../utils/mutations';
 
-
 const SavedBooks = () => {
+  let usersData;
+  const { userData, userLoading, userError } = useQuery(GET_ME);
 
-  const { data, loading, error } = useQuery(GET_ME);
-
-  if (data) {
-    let userData = data;
-  } else (error) {
-      console.error(error);
-    }
+  if (userData) {
+    usersData = userData;
+  } else if (error) {
+    console.error(error);
   }
 
 const [removeBook, { data, loading, error }] = useMutation(REMOVE_BOOK)
@@ -53,8 +51,8 @@ const [removeBook, { data, loading, error }] = useMutation(REMOVE_BOOK)
       </div>
       <Container>
         <h2 className='pt-5'>
-          {userData.savedBooks.length
-            ? `Viewing ${userData.savedBooks.length} saved ${userData.savedBooks.length === 1 ? 'book' : 'books'}:`
+          {usersData.savedBooks.length
+            ? `Viewing ${usersData.savedBooks.length} saved ${usersData.savedBooks.length === 1 ? 'book' : 'books'}:`
             : 'You have no saved books!'}
         </h2>
         <Row>

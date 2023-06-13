@@ -27,7 +27,7 @@ const LoginForm = () => {
     }
 
     try {
-      const { data, loading } = loginUser({
+      const { data, loading } = await loginUser({
         variables: {
           email: userFormData.email,
         password: userFormData.password,
