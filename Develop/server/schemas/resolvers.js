@@ -18,24 +18,29 @@ const resolvers = {
   },
   Mutation: {
     login: async (parent, { email, password }) => {
+      console.log(`email: ${email}`);
+      console.log(`password: ${password}`);
       try {
         const user = await User.findOne({ email: email });
-
+        console.log(`user: ${user}`);
         if (!user) {
           throw new Error(
             "Unable to locate a user account associated with that email!"
           );
         }
 
-        const correctPw = await user.isCorrectPassword(password);
-
-        if (!correctPw) {
+        const correctPW = await user.isCorrectPassword(password);
+        console.log(`correctPW: ${correctPW}`);
+        if (!correctPW) {
           throw new Error("Invalid login credentials!");
         }
 
         const token = signToken(user);
+        console.log(`logging in user: ${user}`);
+        console.log(`logging in token: ${token}`);
         return { token, user };
       } catch (err) {
+        console.error(err);
         throw new Error("An error occurred during login.");
       }
     },
