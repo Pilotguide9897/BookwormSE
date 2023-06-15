@@ -6,13 +6,13 @@ const resolvers = {
   Query: {
     me: async (parent, args, context) => {
       if (context.user) {
-        const foundUser = await User.findOne({
+        const user = await User.findOne({
           $or: [{ _id: context.user._id }, { username: context.user.username }],
         });
-        if (!foundUser) {
+        if (!user) {
           throw new Error("Unable to find an associated user");
         }
-        return foundUser;
+        return user;
       }
       throw new Error("You must be logged in to access user-specific data");
     },
