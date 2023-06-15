@@ -14,8 +14,8 @@ A fully functioning Google Books API search engine with a GraphQL API built with
 - [License](#license)
 
 ## Screenshots 
-![Search](./Screenshots/Search)
-![Saved](./Screenshots/Save)
+![Search](./Screenshots/Search.png)
+![Saved](./Screenshots/Save.png)
 
 ## Description
 
