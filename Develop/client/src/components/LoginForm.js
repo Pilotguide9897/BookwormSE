@@ -41,11 +41,12 @@ const LoginForm = () => {
         throw new Error('something went wrong logging in!');
       }
 
-      const { token, user } = data
+      const { token, user } = data.login
       console.log(user);
+      console.log(token);
       Auth.login(token);
     } catch (err) {
-      console.error(err);
+      console.error(`Error with logging in:`, err);
       setShowAlert(true);
     }
 

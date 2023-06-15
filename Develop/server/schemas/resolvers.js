@@ -1,3 +1,4 @@
+const { AuthenticationError } = require("apollo-server-express");
 const { User } = require("../models/");
 const { signToken } = require("../utils/auth");
 
@@ -61,7 +62,9 @@ const resolvers = {
       }
     },
     saveBook: async (parent, { input }, context) => {
-      if (context.user) {
+      console.log(`context:`, context); // the context is missing for some reason.
+        if (context.user) {
+        console.log("we have context.user!");
         try {
           const userWithSavedBook = await User.findOneAndUpdate(
             { _id: context.user._id },
@@ -75,7 +78,7 @@ const resolvers = {
           );
         }
       }
-      throw new Error("You must be logged in to save books!");
+      throw new AuthenticationError("You must be logged in to save books!");
     },
     removeBook: async (parent, { bookId }, context) => {
       if (context.user) {
