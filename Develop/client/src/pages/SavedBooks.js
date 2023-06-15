@@ -7,16 +7,9 @@ import { GET_ME } from '../utils/queries';
 import { REMOVE_BOOK } from '../utils/mutations';
 
 const SavedBooks = () => {
-  let usersData;
-  const { userData, userLoading, userError } = useQuery(GET_ME);
-
-  if (userData) {
-    usersData = userData;
-  } else if (error) {
-    console.error(error);
-  }
-
-const [removeBook, { data, loading, error }] = useMutation(REMOVE_BOOK)
+  const { data: userData, loading: userLoading, error: userError } = useQuery(GET_ME);
+  
+const [removeBook, { data: removeData, loading: removeLoading, error: removeError }] = useMutation(REMOVE_BOOK);
 
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
   const handleDeleteBook = async (bookId) => {
@@ -37,8 +30,15 @@ const [removeBook, { data, loading, error }] = useMutation(REMOVE_BOOK)
     }
   };
 
+    
+  if (userLoading) {
+    return <h2>Loading...</h2>;
+  } else if (userError || !userData) {
+    console.error(userError);
+  }
+
   // if data isn't here yet, say so
-  if (loading) {
+  if (removeLoading) {
     return <h2>LOADING...</h2>;
   }
 
@@ -51,12 +51,12 @@ const [removeBook, { data, loading, error }] = useMutation(REMOVE_BOOK)
       </div>
       <Container>
         <h2 className='pt-5'>
-          {usersData.savedBooks.length
-            ? `Viewing ${usersData.savedBooks.length} saved ${usersData.savedBooks.length === 1 ? 'book' : 'books'}:`
+          {userData.me.savedBooks.length
+            ? `Viewing ${userData.me.savedBooks.length} saved ${userData.me.savedBooks.length === 1 ? 'book' : 'books'}:`
             : 'You have no saved books!'}
         </h2>
         <Row>
-          {userData.savedBooks.map((book) => {
+          {userData.me.savedBooks.map((book) => {
             return (
               <Col md="4">
                 <Card key={book.bookId} border='dark'>
