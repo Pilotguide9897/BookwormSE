@@ -20,10 +20,13 @@ const [removeBook, { data: removeData, loading: removeLoading, error: removeErro
     }
 
     try {
-      const { data: updatedUser } = await removeBook({ variables: { bookId }, context: { headers: { Authorization: `Bearer ${token}` } } });
+      // const { data: updatedUser } = await removeBook({ variables: { bookId }, context: { headers: { Authorization: `Bearer ${token}` } } });
 
-      removeBookId(bookId);
-      return updatedUser;
+       const { data } = await removeBook({
+         variables: { bookId },
+         context: { headers: { Authorization: `Bearer ${token}` } },
+       });
+
     } catch (err) {
       console.error(err);
         throw new Error(`An error occurred removing the book! Error message: ${err.message}`);
