@@ -21,7 +21,7 @@ A fully functioning Google Books API search engine with a GraphQL API built with
 
 BookwormSE is a book search engine built for avid readers. With an easy-to-navigate interface, users can search for books, view detailed information, and access links to the books on Google Books. It features a Login/Signup option to provide users with the ability to save their favorite books for later reference. A user-friendly tool, it serves as an excellent companion for those who want to keep an updated list of books to purchase.
 
-A video demonstrating the application's functionality can be visited [here](https://youtu.be/evaArgp2nTg).
+The deployed application can be visited [here](https://obscure-hamlet-34414-e7163f57d6e6.herokuapp.com/).
 
 ## Installation
 
@@ -29,11 +29,11 @@ BookwormSE is deployed on Heroku and may be accessed at the link above. Users wh
 
 1. Clone the repository from GitHub using the following command: `git clone https://github.com/<your_username>/BookFinder.git`
 
-2. Navigate to the newly created directory, and install the necessary dependencies using `npm install`.
+2. Navigate to the newly created directory, and install the necessary dependencies using `npm run install` in the application's root directory.
 
-3. From the project's root directory run `npm run start`
+3. From the project's root directory run `npm run develop`
 
-Following these steps, BookwormSE should be accessible by accessing `http://localhost:3000` from your browser of choice.
+Following these steps, BookwormSE should be accessible by navigating to `http://localhost:3000` from your browser of choice.
 
 ## Usage
 
